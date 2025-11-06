@@ -42,7 +42,6 @@ class UpdatePostRequest extends FormRequest
                     ->ignore($post?->id),
             ],
             'content' => ['required', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['integer', 'exists:tags,id'],
         ];
@@ -54,7 +53,6 @@ class UpdatePostRequest extends FormRequest
             'title.required' => 'Başlık zorunludur.',
             'title.unique' => 'Bu başlık zaten mevcut.',
             'content.required' => 'İçerik zorunludur.',
-            'category_id.required' => 'Kategori seçimi zorunludur.',
             'category_id.exists' => 'Seçilen kategori geçersizdir.',
             'tags.array' => 'Etiketler bir dizi olmalıdır.',
             'tags.*.exists' => 'Seçilen etiket geçersizdir.',
