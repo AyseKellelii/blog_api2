@@ -1,0 +1,777 @@
+{
+	"info": {
+		"_postman_id": "495b7931-e08b-4fcc-8d87-57d7dc4afec6",
+		"name": "Blog_api2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48324568",
+		"_collection_link": "https://ayseekelleli-3752352.postman.co/workspace/Ayse's-Team's-Workspace~e128288a-b6f4-4af8-8a8a-e85453ba8321/collection/48324568-495b7931-e08b-4fcc-8d87-57d7dc4afec6?action=share&source=collection_link&creator=48324568"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Eda\",\r\n  \"surname\": \"Culum\",\r\n  \"email\": \"eda@gmail.com\",\r\n  \"password\": \"123456\",\r\n  \"password_confirmation\": \"123456\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/register",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Login yanıtından token'ı çekiyor ve environment değişkenine kaydediyor\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"if (response.token) {\r",
+							"    pm.environment.set(\"token\", response.token);\r",
+							"    console.log(\" Token kaydedildi:\", response.token);\r",
+							"} else if (response.data && response.data.token) {\r",
+							"    pm.environment.set(\"token\", response.data.token);\r",
+							"    console.log(\"Token kaydedildi (data içinde):\", response.data.token);\r",
+							"} else {\r",
+							"    console.warn(\"Token bulunamadı, yanıt formatını kontrol et.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"eda@gmail.com\",\r\n  \"password\": \"123456\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/login",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/logout",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Category",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Sanat\"\r\n  \r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/categories",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Category",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Teknoloji\"\r\n  \r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/categories/saglik",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"categories",
+						"saglik"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Category",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/categories/teknoloji",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"categories",
+						"teknoloji"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"category_id\": 5,\r\n    \"title\": \"deneme124\",\r\n    \"content\": \"Bu yazıda Laravel 12 ile REST API nasıl yazılır onu anlatıyoruzz.\",\r\n    \"tags\": [1, 3]\r\n}\r\n\r\n\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/posts",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Tag",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Api\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/tags",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Tag",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Laravell\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/tags/laravel",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"tags",
+						"laravel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Tag",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/tags/2",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"tags",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"category_id\": 5,\r\n    \"title\": \"api deneme\",\r\n    \"content\": \"Bu yazıda Laravel 12 ile REST API nasıl yazılır onu anlatıyoruz.\",\r\n    \"tags\": [1,3]\r\n}\r\n\r\n\r\n"
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/posts/deneme124",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"posts",
+						"deneme124"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/posts/api-deneme",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"posts",
+						"api-deneme"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Document",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "fatura ",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "sdfghjklkjhg",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Ayse/Downloads/LARAVEL BLOG.docx"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/documents",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"documents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Document",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "title",
+							"value": "task dosyası",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "yapılacak acilll",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://api_blog.com/api/documents/fatura ",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"documents",
+						"fatura "
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Document",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/documents/task dosyası",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"documents",
+						"task dosyası"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/categories",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user-filter",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/user/eda/tags",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"user",
+						"eda",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post_search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/posts?search=laravel",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "laravel"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post_date",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://api_blog.com/api/posts?start_date=2025-11-06&end_date=2025-11-06",
+					"protocol": "http",
+					"host": [
+						"api_blog",
+						"com"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2025-11-06"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-11-06"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
