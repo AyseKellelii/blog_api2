@@ -72,6 +72,7 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request)
     {
+        // Kategori doğrulaması: Kategori kullanıcının mı?
         $category = $request->user()
             ->categories()
             ->where('id', $request->category_id)
@@ -86,7 +87,7 @@ class PostController extends Controller
             ], 404);
         }
 
-        // slug üretimi
+        // slug üretimi, ve eğer aynı slug varsa -1, -2 ekler
         $baseSlug = Str::slug($request->title);
         $slug = $baseSlug;
         $count = 1;
