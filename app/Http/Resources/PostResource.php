@@ -10,24 +10,31 @@ class PostResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'content' => $this->content,
-            'created_at' => $this->created_at->format('Y-m-d H:i'),
+            'id'        => $this->id,
+            'title'     => $this->title,
+            'slug'      => $this->slug,
+            'content'   => $this->content,
+            'created_at'=> $this->created_at?->format('Y-m-d H:i'),
 
-            'category' => [
-                'id' => $this->category->id ?? null,
-                'name' => $this->category->name ?? null,
-                'slug' => $this->category->slug ?? null,
-            ],
+            // Kategori bilgisi (yalnızca ilişki yüklenmişse)
+            'category'  => $this->whenLoaded('category', function () {
+                return [
+                    'id'   => $this->category->id,
+                    'name' => $this->category->name,
+                    'slug' => $this->category->slug,
+                ];
+            }),
 
+            // Etiketler
             'tags' => TagResource::collection($this->whenLoaded('tags')),
 
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ],
+            // Kullanıcı bilgisi
+            'user' => $this->whenLoaded('user', function () {
+                return [
+                    'id'   => $this->user->id,
+                    'name' => $this->user->name,
+                ];
+            }),
         ];
     }
 }

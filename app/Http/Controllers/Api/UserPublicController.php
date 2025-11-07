@@ -3,47 +3,105 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\TagResource;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class UserPublicController extends Controller
 {
-    public function categories(User $user): JsonResponse
+    public function categories(Request $request,User $user): JsonResponse
     {
-        $categories = $user->categories()->latest()->get();
+        $query = $user->categories()->latest();
+
+        // Arama filtresi
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $categories = $query->get();
 
         return response()->json([
-            'data' => [
-                'user' => $user->name,
-                'type' => 'categories',
-                'items' => $categories
-            ]
-        ], 200);
+            'user' => $user->name,
+            'type' => 'categories',
+            'count' => $categories->count(),
+            'filters' => [
+                'search' => $request->search ?? null,
+            ],
+            'items' => CategoryResource::collection($categories)
+        ]);
     }
 
-    public function posts(User $user): JsonResponse
+    public function posts(Request $request, User $user): JsonResponse
     {
-        $posts = $user->posts()->with('category', 'tags')->latest()->get();
+        $query = $user->posts()
+            ->with(['category:id,name,slug', 'tags:id,name,slug'])
+            ->latest();
+
+        // Arama filtresi (başlık veya içerik)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        // Tarih aralığı filtreleme (isteğe bağlı)
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $posts = $query->paginate(10);
 
         return response()->json([
-            'data' => [
-                'user' => $user->name,
-                'type' => 'posts',
-                'items' => $posts
-            ]
-        ], 200);
+            'user' => $user->name,
+            'type' => 'posts',
+            'meta' => [
+                'total' => $posts->total(),
+                'current_page' => $posts->currentPage(),
+                'last_page' => $posts->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                    'start_date' => $request->start_date ?? null,
+                    'end_date' => $request->end_date ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $posts->nextPageUrl(),
+                'prev' => $posts->previousPageUrl(),
+            ],
+            'items' => PostResource::collection($posts)
+        ]);
     }
 
-    public function tags(User $user): JsonResponse
+    public function tags(Request $request, User $user): JsonResponse
     {
-        $tags = $user->tags()->latest()->get();
+        $query = $user->tags()->latest();
+
+        // Arama filtresi
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $tags = $query->get();
 
         return response()->json([
-            'data' => [
-                'user' => $user->name,
-                'type' => 'tags',
-                'items' => $tags
-            ]
-        ], 200);
+            'user' => $user->name,
+            'type' => 'tags',
+            'count' => $tags->count(),
+            'filters' => [
+                'search' => $request->search ?? null,
+            ],
+            'items' => TagResource::collection($tags)
+        ]);
     }
 }

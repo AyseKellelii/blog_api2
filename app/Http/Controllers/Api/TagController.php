@@ -18,13 +18,34 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $tags = $request->user()->tags()->latest()->get();
+        $query = $request->user()->tags()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $tags = $query->paginate(10);
 
         return response()->json([
-            'data' => $tags
-        ], 200);
+            'meta' => [
+                'total' => $tags->total(),
+                'per_page' => $tags->perPage(),
+                'current_page' => $tags->currentPage(),
+                'last_page' => $tags->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $tags->nextPageUrl(),
+                'prev' => $tags->previousPageUrl(),
+            ],
+            'data' => TagResource::collection($tags),
+        ]);
     }
 
     /**

@@ -15,11 +15,37 @@ use Illuminate\Support\Str;
 class CategoryController extends Controller
 {
     use AuthorizesRequests;
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $categories = $request->user()->categories()->latest()->get();
 
-        return CategoryResource::collection($categories);
+        $query = $request->user()->categories()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+
+        $categories = $query->paginate(10);
+
+        // JSON çıktısı
+        return response()->json([
+            'meta' => [
+                'total' => $categories->total(),
+                'per_page' => $categories->perPage(),
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $categories->nextPageUrl(),
+                'prev' => $categories->previousPageUrl(),
+            ],
+            'data' => CategoryResource::collection($categories),
+        ]);
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse

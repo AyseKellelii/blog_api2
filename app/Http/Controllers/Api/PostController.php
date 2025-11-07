@@ -125,6 +125,7 @@ class PostController extends Controller
                     );
                 }
 
+                // Eğer etiket bulunduysa ID'sini ekle
                 if ($tag) {
                     $tagIds[] = $tag->id;
                 }
@@ -134,13 +135,10 @@ class PostController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'type' => 'posts',
-                'id' => $post->id,
-                'attributes' => $post->load('category', 'tags')
-            ],
-            'message' => 'Gönderi başarıyla oluşturuldu.'
+            'message' => 'Gönderi başarıyla oluşturuldu.',
+            'data' => new PostResource($post->load(['user', 'category', 'tags']))
         ], 201);
+
     }
 
     public function show(Request $request, Post $post)
@@ -149,11 +147,7 @@ class PostController extends Controller
         $this->authorize('view', $post);
 
         return response()->json([
-            'data' => [
-                'type' => 'posts',
-                'id' => $post->id,
-                'attributes' => $post->load('category', 'tags')
-            ]
+            'data' => new PostResource($post->load(['user', 'category', 'tags']))
         ], 200);
 
     }
@@ -213,12 +207,9 @@ class PostController extends Controller
 
 
         return response()->json([
-            'data' => [
-                'type' => 'posts',
-                'id' => $post->id,
-                'attributes' => $post->load('category', 'tags')
-            ],
-            'message' => 'Gönderi başarıyla güncellendi.'
+            'message' => 'Gönderi başarıyla güncellendi.',
+            'data' => new PostResource($post->load(['user', 'category', 'tags'])
+            )
         ], 200);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
+use App\Http\Resources\DocumentResource;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -18,16 +19,41 @@ class DocumentController extends Controller
     {
         $this->authorize('viewAny', [Document::class, $user]);
 
-        // Belgeleri getir
         $target = $user ?? $request->user();
-        $documents = $target->documents()->latest()->get();
+
+        $query = $target->documents()
+            ->with(['media', 'user'])
+            ->latest();
+
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $documents = $query->paginate(10);
 
         return response()->json([
-            'data' => [
-                'user' => $target->name,
-                'type' => 'documents',
-                'items' => $documents
-            ]
+            'user' => $target->name,
+            'type' => 'documents',
+            'meta' => [
+                'total' => $documents->total(),
+                'per_page' => $documents->perPage(),
+                'current_page' => $documents->currentPage(),
+                'last_page' => $documents->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $documents->nextPageUrl(),
+                'prev' => $documents->previousPageUrl(),
+            ],
+            'items' => DocumentResource::collection($documents),
         ], 200);
     }
 
@@ -36,11 +62,7 @@ class DocumentController extends Controller
         $this->authorize('view', $document);
 
         return response()->json([
-            'data' => [
-                'type' => 'documents',
-                'id' => $document->id,
-                'attributes' => $document->load('media')
-            ]
+            'data' => new DocumentResource($document->load(['media', 'user'])),
         ], 200);
     }
 
@@ -59,7 +81,7 @@ class DocumentController extends Controller
 
         return response()->json([
             'message' => 'Belge başarıyla yüklendi.',
-            'data' => $document->load('media'),
+            'data' => new DocumentResource($document->load(['media', 'user'])),
         ], 201);
     }
 
@@ -81,7 +103,7 @@ class DocumentController extends Controller
 
         return response()->json([
             'message' => 'Belge başarıyla güncellendi.',
-            'data' => $document->load('media'),
+            'data' => new DocumentResource($document->load(['media', 'user'])),
         ]);
     }
 
