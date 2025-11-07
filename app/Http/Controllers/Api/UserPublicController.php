@@ -12,24 +12,33 @@ use Illuminate\Http\JsonResponse;
 
 class UserPublicController extends Controller
 {
-    public function categories(Request $request,User $user): JsonResponse
+    public function categories(Request $request, User $user): JsonResponse
     {
         $query = $user->categories()->latest();
 
-        // Arama filtresi
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $categories = $query->get();
+        $categories = $query->paginate($request->input('per_page', 10));
 
         return response()->json([
             'user' => $user->name,
             'type' => 'categories',
-            'count' => $categories->count(),
-            'filters' => [
-                'search' => $request->search ?? null,
+            'meta' => [
+                'total' => $categories->total(),
+                'per_page' => $categories->perPage(),
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $categories->nextPageUrl(),
+                'prev' => $categories->previousPageUrl(),
             ],
             'items' => CategoryResource::collection($categories)
         ]);
@@ -86,20 +95,29 @@ class UserPublicController extends Controller
     {
         $query = $user->tags()->latest();
 
-        // Arama filtresi
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $tags = $query->get();
+        $tags = $query->paginate($request->input('per_page', 10));
 
         return response()->json([
             'user' => $user->name,
             'type' => 'tags',
-            'count' => $tags->count(),
-            'filters' => [
-                'search' => $request->search ?? null,
+            'meta' => [
+                'total' => $tags->total(),
+                'per_page' => $tags->perPage(),
+                'current_page' => $tags->currentPage(),
+                'last_page' => $tags->lastPage(),
+                'filters' => [
+                    'search' => $request->search ?? null,
+                ],
+            ],
+            'links' => [
+                'self' => $request->fullUrl(),
+                'next' => $tags->nextPageUrl(),
+                'prev' => $tags->previousPageUrl(),
             ],
             'items' => TagResource::collection($tags)
         ]);
