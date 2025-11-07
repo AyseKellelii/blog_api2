@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Istanbul',
+    'schedule_timezone' => 'Europe/Istanbul',
+
 
     /*
     |--------------------------------------------------------------------------
