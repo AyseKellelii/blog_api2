@@ -16,36 +16,15 @@ class DocumentController extends Controller
     use AuthorizesRequests;
     public function index(Request $request, ?User $user = null): JsonResponse
     {
-        // Eğer route'tan user gelmişse (yani başkasının belgeleri isteniyorsa)
-        if ($user) {
-            // Eğer giriş yapan kişi farklıysa 403 döndür
-            if ($user->id !== $request->user()->id) {
-                return response()->json([
-                    'errors' => [
-                        'status' => 403,
-                        'title' => 'Bu belgeleri görüntüleme izniniz yok.'
-                    ]
-                ], 403);
-            }
+        $this->authorize('viewAny', [Document::class, $user]);
 
-            // Aynı kullanıcıysa belgeleri getir
-            $documents = $user->documents()->latest()->get();
-
-            return response()->json([
-                'data' => [
-                    'user' => $user->name,
-                    'type' => 'documents',
-                    'items' => $documents
-                ]
-            ], 200);
-        }
-
-        // Eğer route'ta user yoksa giriş yapan kişinin belgeleri
-        $documents = $request->user()->documents()->latest()->get();
+        // Belgeleri getir
+        $target = $user ?? $request->user();
+        $documents = $target->documents()->latest()->get();
 
         return response()->json([
             'data' => [
-                'user' => $request->user()->name,
+                'user' => $target->name,
                 'type' => 'documents',
                 'items' => $documents
             ]
