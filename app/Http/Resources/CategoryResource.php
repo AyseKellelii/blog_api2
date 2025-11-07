@@ -19,6 +19,7 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'created_at' => $this->created_at->format('Y-m-d H:i'),
+            //Bir kategoriye ait post sayısı
             'post_count' => $this->whenLoaded('posts', fn() => $this->posts->count()),
 
             // Kullanıcı bilgileri:
